@@ -57,6 +57,8 @@
                                 <th scope="col">Nome</th>
                                 <th scope="col">Categoria</th>
                                 <th scope="col">Preço</th>
+                                <th scope="col">Editar</th>
+                                <th scope="col">Excluir</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -65,6 +67,10 @@
                             <td><a href="produto.php?nome=<?php echo $produto["nome"]; ?>"><?php echo $produto["nome"]; ?></a></td>
                             <td><?php echo $produto["categoria"]; ?></td>
                             <td><?php echo "R$ ".$produto["preco"]; ?></td>
+                            <td><a href="desafio.php?nome=<?php echo $produto["nome"]; ?>" class="btn btn-primary btn-sm">Editar</a></td>
+                            <td><a href="desafio.php?nome=<?php echo $produto["nome"]; ?>" class="btn btn-primary btn-sm">Excluir</a></td>
+                            <!-- <td><button type="button" class="btn btn-primary btn-sm">Editar</button></td>
+                            <td><button type="button" class="btn btn-primary btn-sm">Excluir</button></td> -->
                         </tr>
                     <?php } ?>
                         </tbody>
@@ -75,42 +81,86 @@
                 ?>
             </div>
             <div class="col-5 bg-light p-5">
-                <h5 class="pb-3">Cadastrar produto</h5>
-                <form action="" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="nomeProduto">Nome</label>
-                        <input type="text" class="form-control" id="nomeProduto" name="nomeProduto">
-                    </div>
-                    <div class="form-group">
-                        <label for="categoriaProduto">Categoria</label>
-                        <select class="form-control" id="categoriaProduto" name="categoriaProduto">
-                            <option selected>Selecione uma categoria</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="descProduto">Descrição</label>
-                        <textarea class="form-control noresize" id="descProduto" name="descProduto" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="qtdProduto">Quantidade</label>
-                        <input type="number" class="form-control" id="qtdProduto" name="qtdProduto">
-                    </div>
-                    <div class="form-group">
-                        <label for="precoProduto">Preço</label>
-                        <input type="number" class="form-control" id="precoProduto" name="precoProduto">
-                    </div>
-                    <div class="form-group">
-                        <label for="imgProduto">Foto do produto</label>
-                        <input type="file" class="form-control-file" id="imgProduto" name="imgProduto">
-                    </div>
-                    <div class="text-right">
-                        <button class="btn btn-primary">Enviar</button>
-                    </div>
-                </form>
+                <?php if(isset($_GET['nome'])): ?>
+                    <?php foreach($produtos as $produto){ ?>
+                        <?php if ($_GET['nome'] == $produto['nome']): ?>    
+                            <h5 class="pb-3">Editar produto</h5>
+                            <form action="" method="post" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="nomeProduto">Nome</label>
+                                    <input type="text" class="form-control" id="nomeProduto" name="nomeProduto" value="<?= $produto['nome'] ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="categoriaProduto">Categoria</label>
+                                    <select class="form-control" id="categoriaProduto" name="categoriaProduto" required>
+                                        <?php foreach($categorias as $categoria){ ?>
+                                            <?php if ($categoria == $produto['categoria']): ?>
+                                                <option selected><?= $produto['categoria'] ?></option>
+                                            <?php else: ?>
+                                                <option><?= $categoria ?></option>
+                                            <?php endif; ?>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="descProduto">Descrição</label>
+                                    <textarea class="form-control noresize" id="descProduto" name="descProduto" rows="3" required><?= $produto['desc'] ?></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="qtdProduto">Quantidade</label>
+                                    <input type="number" class="form-control" id="qtdProduto" name="qtdProduto" value="<?= $produto['qtd'] ?>" required> 
+                                </div>
+                                <div class="form-group">
+                                    <label for="precoProduto">Preço</label>
+                                    <input type="number" class="form-control" id="precoProduto" name="precoProduto" pattern="[0-9]+([,\.][0-9]+)?" min="0" step="any" value="<?= $produto['preco'] ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="imgProduto">Foto do produto</label>
+                                    <input type="file" class="form-control-file" id="imgProduto" name="imgProduto" value="<?= $produto['img'] ?>">
+                                </div>
+                                <div class="text-right">
+                                    <button class="btn btn-primary">Editar</button>
+                                </div>
+                            </form>
+                        <?php endif; ?>
+                    <?php } ?>
+                <?php else: ?>
+                    <h5 class="pb-3">Cadastrar produto</h5>
+                    <form action="" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="nomeProduto">Nome</label>
+                            <input type="text" class="form-control" id="nomeProduto" name="nomeProduto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoriaProduto">Categoria</label>
+                            <select class="form-control" id="categoriaProduto" name="categoriaProduto" required>
+                                <option selected disabled>Selecione uma categoria</option>
+                                <?php foreach($categorias as $categoria){ ?>
+                                    <option><?= $categoria ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="descProduto">Descrição</label>
+                            <textarea class="form-control noresize" id="descProduto" name="descProduto" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="qtdProduto">Quantidade</label>
+                            <input type="number" class="form-control" id="qtdProduto" name="qtdProduto" required> 
+                        </div>
+                        <div class="form-group">
+                            <label for="precoProduto">Preço</label>
+                            <input type="number" class="form-control" id="precoProduto" name="precoProduto" pattern="[0-9]+([,\.][0-9]+)?" min="0" step="any" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="imgProduto">Foto do produto</label>
+                            <input type="file" class="form-control-file" id="imgProduto" name="imgProduto" required>
+                        </div>
+                        <div class="text-right">
+                            <button class="btn btn-primary">Enviar</button>
+                        </div>
+                    </form>                
+                <?php endif; ?>
             </div>
         </div>
     </div>
