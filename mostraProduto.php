@@ -10,12 +10,12 @@
 </head>
 <body>
     <?php include_once("variaveis.php"); ?>
-    <div class="container bg-light p-5">
+    <div class="container jumbotron p-5 mt-5">
         <button class="mb-3"><a href="desafio.php">&larr; Voltar para lista de produtos</a></button>
         <div class="row">
             <?php 
                 foreach($produtos as $produto){ 
-                    if ($_GET["nome"] == $produto["nome"]){
+                    if ($_GET["id"] == $produto["id"]){
             ?>
                 <div class="col-5">
                     <img src="<?php echo $produto["img"]; ?>" class="img-fluid" alt="Imagem Produto">

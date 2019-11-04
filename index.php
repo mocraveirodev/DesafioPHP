@@ -4,28 +4,26 @@
         if(file_exists($nomeArquivo)){
             $arquivo = file_get_contents($nomeArquivo);
             $produtos = json_decode($arquivo,true);
-            $produtos[] = ["nome"=>$nomeProduto,"categoria"=>$categoriaProduto,"desc"=>$descProduto,"qtd"=>$qtdProduto,"preco"=>$precoProduto,"img"=>$imgProduto];
-            // var_dump($produtos);
+            $id = count($produtos) + 1;
+            $produtos[] = ["id"=>$id,"nome"=>$nomeProduto,"categoria"=>$categoriaProduto,"desc"=>$descProduto,"qtd"=>$qtdProduto,"preco"=>$precoProduto,"img"=>$imgProduto];
             $json = json_encode($produtos);
             $deuCerto = file_put_contents($nomeArquivo,$json);
         }else{
             $produtos = [];
-            $produtos[] = ["nome"=>$nomeProduto,"categoria"=>$categoriaProduto,"desc"=>$descProduto,"qtd"=>$qtdProduto,"preco"=>$precoProduto,"img"=>$imgProduto];
-            // var_dump($produtos);
+            $id = count($produtos) + 1;
+            $produtos[] = ["id"=>$id,"nome"=>$nomeProduto,"categoria"=>$categoriaProduto,"desc"=>$descProduto,"qtd"=>$qtdProduto,"preco"=>$precoProduto,"img"=>$imgProduto];
             $json = json_encode($produtos);
             $deuCerto = file_put_contents($nomeArquivo,$json);
         }
     }
     if($_POST){
-        // var_dump($_FILES);
-        // exit;
         $nomeImg = $_FILES["imgProduto"]["name"];
         $locasTmp = $_FILES["imgProduto"]["tmp_name"];
         $dataAtual = date("d-m-y");
         $caminhoSalvo = "img/".$dataAtual.$nomeImg;
 
         $deuCerto = move_uploaded_file($locasTmp,$caminhoSalvo);
-        // exit;
+        
         echo cadastrarProduto($_POST["nomeProduto"],$_POST["categoriaProduto"],$_POST["descProduto"],$_POST["qtdProduto"],$_POST["precoProduto"],$caminhoSalvo);
     }
 ?>
@@ -43,7 +41,19 @@
 <body>
     <?php 
         include_once("variaveis.php");
-        // var_dump($produtos);
+        function excluirProduto($id){
+            $nomeArquivo = "produto.json";
+            $arquivo = file_get_contents($nomeArquivo);
+            $produtos = json_decode($arquivo,true);
+            foreach($produtos as $produto){
+                if ($id == $produto['id']){
+                    unset($produto);
+                }
+            }
+            var_dump($produtos);
+            $json = json_encode($produtos);
+            $deuCerto = file_put_contents($nomeArquivo,$json);
+        }
     ?>
     <div class="container">
         <div class="row p-4">
@@ -64,13 +74,11 @@
                         <tbody>
                     <?php foreach($produtos as $produto){ ?>
                         <tr>
-                            <td><a href="produto.php?nome=<?php echo $produto["nome"]; ?>"><?php echo $produto["nome"]; ?></a></td>
+                            <td><a href="mostraProduto.php?id=<?php echo $produto["id"]; ?>"><?php echo $produto["nome"]; ?></a></td>
                             <td><?php echo $produto["categoria"]; ?></td>
                             <td><?php echo "R$ ".$produto["preco"]; ?></td>
-                            <td><a href="desafio.php?nome=<?php echo $produto["nome"]; ?>" class="btn btn-primary btn-sm">Editar</a></td>
-                            <td><a href="desafio.php?nome=<?php echo $produto["nome"]; ?>" class="btn btn-primary btn-sm">Excluir</a></td>
-                            <!-- <td><button type="button" class="btn btn-primary btn-sm">Editar</button></td>
-                            <td><button type="button" class="btn btn-primary btn-sm">Excluir</button></td> -->
+                            <td><a href="editaProduto.php?id=<?php echo $produto["id"]; ?>" class="btn btn-primary btn-sm">Editar</a></td>
+                            <td><button onclick="excluirProduto(<?php echo $produto['id']; ?>)" class="btn btn-primary btn-sm">Excluir</button></td>
                         </tr>
                     <?php } ?>
                         </tbody>
@@ -80,10 +88,10 @@
                     }
                 ?>
             </div>
-            <div class="col-5 bg-light p-5">
-                <?php if(isset($_GET['nome'])): ?>
+            <div class="col-5 jumbotron p-5">
+                <?php if(isset($_GET['id'])): ?>
                     <?php foreach($produtos as $produto){ ?>
-                        <?php if ($_GET['nome'] == $produto['nome']): ?>    
+                        <?php if ($_GET['id'] == $produto['id']): ?>    
                             <h5 class="pb-3">Editar produto</h5>
                             <form action="" method="post" enctype="multipart/form-data">
                                 <div class="form-group">
